@@ -3,7 +3,7 @@ import Mathlib
 open Polynomial
 
 
-/-- Every `a : K` gives a root `algebraMap a` of `frobPoly K`. -/
+
 noncomputable def frobPoly (K : Type*) [Field K] [Fintype K] :
     Polynomial (AlgebraicClosure K) :=
   X ^ (Fintype.card K) - X
@@ -16,10 +16,10 @@ lemma prime_char_of_finite_field
     (ringChar K) % 2 = 1 := by
   have h : Nat.Prime (ringChar K) := by
     exact CharP.prime_ringChar K
-  refine Nat.mod_two_not_eq_zero.mp ?_
+  apply Nat.mod_two_not_eq_zero.mp
   by_contra hmod
   have cRingChar : ringChar K = 2 := by
-    rw [← propext (Nat.Prime.even_iff h)]
+    apply  (Nat.Prime.even_iff h).mp
     exact Nat.even_iff.mpr hmod
   rw[cRingChar] at hchar
   tauto
@@ -62,8 +62,8 @@ lemma X_pow_card_sub_X_ne_zero
     - (X : Polynomial (AlgebraicClosure K)) ≠ 0 := by
   set q : ℕ := Fintype.card K
   have hq1 : q ≠ 1 := by
-    have : 1 < q := Fintype.one_lt_card
-    exact ne_of_gt this
+    have h1_lt_q: 1 < q := Fintype.one_lt_card
+    exact ne_of_gt h1_lt_q
   intro h
   have hc :
       ((X : Polynomial (AlgebraicClosure K)) ^ q
@@ -82,7 +82,6 @@ lemma X_pow_card_sub_X_ne_zero
 /-- The degree computation: `natDegree (X^q - X) = q` for `q = card K`. -/
 lemma natDegree_frobPoly_eq (K : Type*) [Field K] [Fintype K] :
     (frobPoly K).natDegree = Fintype.card K := by
-  classical
   set q : ℕ := Fintype.card K
   have hf : frobPoly K ≠ 0 := by
     simpa [frobPoly] using (X_pow_card_sub_X_ne_zero K)
@@ -109,6 +108,8 @@ lemma natDegree_frobPoly_eq (K : Type*) [Field K] [Fintype K] :
   exact le_antisymm (by simpa [q] using hle) (by simpa [q] using hq_le)
 
 
+/- The canonical copy of each element of `K` in the algebraic closure is a root
+of the frobenius polynomial -/
 lemma roots_of_frob_poly
     (K : Type*) [Field K] [Fintype K]
     (a : K) :
@@ -123,14 +124,6 @@ lemma roots_of_frob_poly
     simp only [sub_self]
   · exact X_pow_card_sub_X_ne_zero K
 
-
-noncomputable def imgK
-    (K : Type*) [Field K] [Fintype K] :
-    Set (AlgebraicClosure K) :=
-  (algebraMap K (AlgebraicClosure K)) '' Set.univ
-
-
--- Finset version of your image (for counting only)
 
 noncomputable def imgKFinset
     (K : Type*) [Field K] [Fintype K] :
@@ -152,6 +145,8 @@ lemma card_imgKFinset
     (Finset.card_image_of_injective
       (s := (Finset.univ : Finset K))
       hinj)
+
+
 --Without this classical, since the algebraic closure is not decidable, the image of the finset
 --is not a finset, and we can't talk about its cardinality.
 section
@@ -166,8 +161,6 @@ lemma imgKFinset_subset_roots
   ) with ⟨a, _ha, rfl⟩
   exact Multiset.mem_toFinset.mpr (roots_of_frob_poly K a)
 
-
-#check Finset.eq_of_subset_of_card_le
 
 lemma card_roots_lower_bound
     (K : Type*) [Field K] [Fintype K] :
@@ -301,12 +294,6 @@ theorem forward_direction (K : Type*) [Field K] [Fintype K] (hchar : ringChar K 
 
 
 
-
-
-
-
-
-
 theorem euler_criterion
     (K : Type*) [Field K] [Fintype K]
     (a : K) (ha : a ≠ 0) (hchar : ringChar K ≠ 2) :
@@ -320,15 +307,15 @@ theorem euler_criterion
     have : (Fintype.card K - 1) / 2 * 2 = Fintype.card K - 1 := by
       rw [← Nat.dvd_iff_div_mul_eq]
       have hcharconversion: CharP K (ringChar K) := ringChar.charP K
-      have : ∃ (n : ℕ+), Nat.Prime (ringChar K) ∧ Fintype.card K = (ringChar K) ^ (↑n : ℕ) :=
+      have : ∃ (n : ℕ+), Nat.Prime (ringChar K) ∧ Fintype.card K = (ringChar K) ^ (n : ℕ) :=
         FiniteField.card K (ringChar K)
       rcases this with ⟨n, hprime, hcard⟩
       rw[hcard]
-      have hoddpow : (ringChar K) ^ (↑n : ℕ) % 2 = 1 := by
+      have hoddpow : (ringChar K) ^ (n : ℕ) % 2 = 1 := by
         rw [Nat.pow_mod]
         rw [hcharodd]
         norm_num
-      have : ((ringChar K) ^ (↑n : ℕ) -1) % 2 = 0 := Nat.sub_mod_eq_zero_of_mod_eq hoddpow
+      have : ((ringChar K) ^ (n : ℕ) -1) % 2 = 0 := Nat.sub_mod_eq_zero_of_mod_eq hoddpow
       exact Nat.dvd_of_mod_eq_zero this
     rw[Eq.symm (pow_mul' b ((Fintype.card K - 1) / 2) 2), this]
     have : b^(Fintype.card K) = b := FiniteField.pow_card b
