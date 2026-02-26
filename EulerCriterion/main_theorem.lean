@@ -114,8 +114,6 @@ lemma X_pow_card_sub_X_ne_zero :
 lemma natDegree_frob_poly_eq :
     (frob_poly K).natDegree = Fintype.card K := by
   set q : ℕ := Fintype.card K
-  have hf : frob_poly K ≠ 0 := by
-    simpa [frob_poly] using (X_pow_card_sub_X_ne_zero K)
   have hcoeffq : (frob_poly K).coeff q = (1 : AlgebraicClosure K) := by
     have hq1 : q ≠ 1 := ne_of_gt (Fintype.one_lt_card : 1 < q)
     simp only [frob_poly, coeff_sub, coeff_X_pow, ↓reduceIte, sub_eq_self, q]
@@ -340,3 +338,4 @@ theorem euler_criterion
 end EulerCriterionProof
 
 end EulerCriterion
+#lint
