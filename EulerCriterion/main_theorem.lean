@@ -18,6 +18,7 @@ embedding into `AlgebraicClosure K`.
 section Definitions
 
 variable (K : Type*) [Field K] [Fintype K]
+
 open Classical in
 /-- `imgK_finset K` is the image of `K` inside `AlgebraicClosure K`, as a finset. -/
 noncomputable def imgK_finset : Finset (AlgebraicClosure K) :=
@@ -68,6 +69,7 @@ lemma power_eq_self
     simp only [pow_one] at han
     have : a ^ n * a * a⁻¹ = a * a⁻¹ := by
       symm
+      --This exact statement was given to my by the tactic exact?
       exact
         (CancelDenoms.derive_trans₂ rfl rfl
           (congrFun (congrArg HMul.hMul (id (Eq.symm han))) a⁻¹))
@@ -102,7 +104,8 @@ lemma X_pow_card_sub_X_ne_zero :
   have hc' :
       ((X : Polynomial (AlgebraicClosure K)) ^ q
             - (X : Polynomial (AlgebraicClosure K))).coeff q = 1 := by
-    simp only [coeff_sub, coeff_X_pow, ↓reduceIte, sub_eq_self, q]
+    --The below line was given to me by the tactic simp?
+    simp only [coeff_sub, coeff_X_pow, reduceIte, sub_eq_self, q]
     exact coeff_X_of_ne_one hq1
   rw [hc'] at hc
   norm_num at hc
@@ -131,6 +134,7 @@ lemma natDegree_frob_poly_eq :
         rw [h1] at hm
         have : q < q := Nat.lt_trans hm this
         norm_num at this
+    --The below line was given to me by the tactic simp?
     simp only [frob_poly, coeff_sub, coeff_X_pow, hm.ne', ↓reduceIte, zero_sub, neg_eq_zero, q]
     exact coeff_X_of_ne_one hm_ne1
   exact le_antisymm (by simpa [q] using hle) (by simpa [q] using hq_le)
