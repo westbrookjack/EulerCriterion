@@ -300,10 +300,8 @@ theorem euler_criterion
     (a : K) (ha : a ≠ 0) (hchar : ringChar K ≠ 2) :
     IsSquare a ↔ a ^ ((Fintype.card K - 1) / 2) = 1 := by
   constructor
-  · intro h
-    rcases h with ⟨b, hb⟩
-    rw [← sq] at hb
-    rw [hb]
+  · rintro ⟨b, rfl⟩
+    rw [← sq]
     have hcharodd : (ringChar K) % 2 = 1 :=
       odd_char_of_finite_field K hchar
     have : (Fintype.card K - 1) / 2 * 2 = Fintype.card K - 1 := by
@@ -323,10 +321,8 @@ theorem euler_criterion
     rw [Eq.symm (pow_mul' b ((Fintype.card K - 1) / 2) 2), this]
     have : b ^ (Fintype.card K) = b := FiniteField.pow_card b
     have hbnonzero : b ≠ 0 := by
-      by_contra hzero
-      rw [hzero] at hb
-      simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow] at hb
-      tauto
+      rintro rfl
+      simp_all
     exact power_eq_self K b (Fintype.card K) hbnonzero this
   · intro h
     have := forward_direction K hchar a h
@@ -334,6 +330,8 @@ theorem euler_criterion
     use b
     rw [hb]
     exact pow_two b
+
+#print axioms euler_criterion
 
 end EulerCriterionProof
 
